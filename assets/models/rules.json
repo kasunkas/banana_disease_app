@@ -1,0 +1,118 @@
+{
+  "Black_Sigatoka": {
+    "Low": [
+      "Prune and remove lower leaves showing initial reddish-brown specks to reduce spore load.",
+      "Ensure proper weed control to reduce relative humidity around the plant base.",
+      "Monitor weather forecasts; prepare for fungicide application if prolonged wet periods are predicted."
+    ],
+    "Medium": [
+      "Conduct target de-leafing of all moderately infected leaves and burn or bury the debris.",
+      "Apply protective fungicides such as Mancozeb or Chlorothalonil.",
+      "Optimize drainage channels to prevent standing water and decrease humidity in the field."
+    ],
+    "High": [
+      "Perform intensive sanitation by cutting off highly infected leaves immediately.",
+      "Apply systemic fungicides (e.g., Triazoles or Strobilurins) in rotation to control active outbreaks.",
+      "Increase potassium and nitrogen fertilization to help plants produce new leaf tissue faster.",
+      "Consider replacing highly susceptible varieties with resistant hybrids in future plantings."
+    ]
+  },
+  "Cordana": {
+    "Low": [
+      "Remove dead leaf tips showing diamond-shaped lesions.",
+      "Avoid overhead sprinkler irrigation; use drip or under-canopy systems to keep leaves dry."
+    ],
+    "Medium": [
+      "Cut away infected leaf areas showing prominent yellow halos.",
+      "Apply copper-based fungicides or Mancozeb to protect healthy foliage.",
+      "Improve plant spacing in congested blocks to allow better air circulation."
+    ],
+    "High": [
+      "Remove heavily diseased leaves showing merged concentric target-like lesions.",
+      "Apply systemic fungicides in combination with a nutritional spray to boost plant defense.",
+      "Incorporate organic compost to enhance soil microbial activity and promote overall plant vigor."
+    ]
+  },
+  "Healthy": {
+    "Low": [
+      "Continue standard agricultural practices: regular irrigation and scheduled weeding.",
+      "Conduct routine inspections every 7-10 days to spot early signs of infection."
+    ],
+    "Medium": [
+      "Maintain active surveillance. A 'Medium' healthy reading might indicate a border case; verify leaf margins closely.",
+      "Ensure balanced NPK fertilization to keep the plant's immune system strong."
+    ],
+    "High": [
+      "The plant is in excellent health! Maintain current cultivation and preventative hygiene measures."
+    ]
+  },
+  "Panama_Disease": {
+    "Low": [
+      "Quarantine the suspected plant immediately; restrict movement of people and tools near it.",
+      "Verify symptoms: check for leaf margin yellowing and petiole collapse.",
+      "Ensure all boots and tools are disinfected with a quaternary ammonium compound before leaving the zone."
+    ],
+    "Medium": [
+      "Isolate the infected plant and surrounding contact plants in a 5-meter radius.",
+      "Strictly avoid moving any soil, suckers, or water from this area to other parts of the farm.",
+      "Inject the pseudostem with glyphosate to kill the plant and prevent further vascular spread."
+    ],
+    "High": [
+      "Immediately eradicate the infected plant and its surrounding neighbors by burning or chemical destruction.",
+      "Fallow or quarantine the infected site; do not plant bananas in this soil for at least 5 to 10 years.",
+      "Report the outbreak to local agricultural extension offices or biosecurity departments.",
+      "For future plots, obtain certified disease-free tissue culture plantlets."
+    ]
+  },
+  "Moko_Disease": {
+    "Low": [
+      "Isolate the plant showing initial wilting of young internal leaves.",
+      "Bag the male inflorescence (de-budding) using a forked stick to prevent insect vector access.",
+      "Sterilize all cutting tools in 10% formaldehyde or heat before and after touching any plant."
+    ],
+    "Medium": [
+      "Eradicate the infected plant immediately using systemic herbicides (e.g., Glyphosate) to dry it out in place.",
+      "Establish a buffer zone around the infected plant where no agricultural activities are performed.",
+      "Check nearby suckers for blackening or vascular discoloration."
+    ],
+    "High": [
+      "Immediately destroy the infected plant, all suckers, and adjacent plants within a 6-meter radius.",
+      "Maintain a strict quarantine barrier: do not allow any animals, tools, or workers into the hot zone.",
+      "Keep the area clean-fallowed or weed-free for 12 months using herbicides to starve the soil bacteria.",
+      "Ensure strict sanitation protocols: disinfect footwear, tools, and tires at farm entry and exit points."
+    ]
+  },
+  "Pestalotiopsis": {
+    "Low": [
+      "Prune the lower leaves showing grey-centered spots.",
+      "Keep the plantation clear of weeds and decaying organic waste.",
+      "Ensure the plant has adequate fertilization to prevent stress."
+    ],
+    "Medium": [
+      "Remove leaf tips and margins showing extensive lesions.",
+      "Apply protective foliar fungicides if weather is consistently wet and warm.",
+      "Control insect pests (like thrips and caterpillars) that create entry wounds on leaves."
+    ],
+    "High": [
+      "Perform thorough pruning of all heavily spotted leaves and burn the waste.",
+      "Apply Mancozeb or Carbendazim foliar sprays to arrest fungal growth.",
+      "Review fertilizer scheduling: ensure adequate nitrogen and potassium to help the plant recover leaf canopy."
+    ]
+  },
+  "Yellow_Sigatoka": {
+    "Low": [
+      "Prune and remove lower leaves showing initial yellow streaks to prevent spore production.",
+      "Improve soil drainage in areas where water tends to collect."
+    ],
+    "Medium": [
+      "Remove leaf tips showing active spots.",
+      "Apply protective foliar fungicides such as copper hydroxide or chlorothalonil.",
+      "Perform thinning to ensure proper air flow through the plant canopy."
+    ],
+    "High": [
+      "Cut and destroy heavily infected leaves showing large grey centers.",
+      "Spray systemic fungicides in rotation to stop active fungal development.",
+      "Ensure balanced NPK nutrition (focusing on potassium) to support plant recovery."
+    ]
+  }
+}

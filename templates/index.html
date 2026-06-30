@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Banana Leaf Disease Detector</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Banana Leaf Disease Detector</h1>
+      <p class="subtitle">Upload a banana leaf image for disease detection</p>
+
+      <form id="uploadForm">
+        <input type="file" id="fileInput" accept="image/*" required />
+        <button type="submit">Analyze Image</button>
+      </form>
+
+      <section id="result" aria-live="polite"></section>
+    </main>
+
+    <script>
+      const form = document.getElementById("uploadForm");
+      const fileInput = document.getElementById("fileInput");
+      const result = document.getElementById("result");
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        if (!fileInput.files || fileInput.files.length === 0) {
+          result.innerHTML =
+            '<p class="error">Please select an image first.</p>';
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+
+        result.innerHTML = "<p>Analyzing image...</p>";
+
+        try {
+          const response = await fetch("/predict", {
+            method: "POST",
+            body: formData,
+          });
+
+          const data = await response.json();
+
+          if (!response.ok || data.error) {
+            result.innerHTML = `<p class="error">${data.error || "Prediction failed."}</p>`;
+            return;
+          }
+
+          let html = `<p><strong>Prediction:</strong> ${data.class}</p>`;
+          html += `<p><strong>Confidence:</strong> ${data.confidence}%</p>`;
+          html += "<h3>All Probabilities</h3><ul>";
+
+          for (const [cls, prob] of Object.entries(data.all_probabilities)) {
+            html += `<li>${cls}: ${prob}%</li>`;
+          }
+
+          html += "</ul>";
+          result.innerHTML = html;
+        } catch (error) {
+          result.innerHTML = `<p class="error">${error.message}</p>`;
+        }
+      });
+    </script>
+  </body>
+</html>

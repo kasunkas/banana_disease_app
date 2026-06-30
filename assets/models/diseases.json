@@ -1,0 +1,112 @@
+[
+  {
+    "id": "black_sigatoka",
+    "name": "Black Sigatoka",
+    "scientificName": "Mycosphaerella fijiensis",
+    "description": "Black Sigatoka is a devastating leaf spot disease affecting banana plants. It significantly reduces leaf area, leading to poor fruit filling and premature ripening of fruit during transport.",
+    "symptoms": [
+      "Small reddish-brown specks on the lower surface of the leaf.",
+      "Specks elongate into streaks parallel to the leaf veins.",
+      "Streaks broaden into elliptical spots with dark brown to black borders and grey centers.",
+      "Large areas of leaf tissue die and dry up under severe pressure."
+    ],
+    "causes": "Caused by the ascomycete fungus Mycosphaerella fijiensis.",
+    "spreadMethod": "Wind-borne ascospores and water-splashed conidia. Wet and warm conditions accelerate the spore germination and spread.",
+    "treatment": "Apply systemic fungicides (triazoles or strobilurins) in rotation to prevent resistance development.",
+    "prevention": "Improve drainage, optimize plant spacing for air circulation, perform regular de-leafing of infected leaves, and use disease-resistant cultivars."
+  },
+  {
+    "id": "cordana",
+    "name": "Cordana Leaf Spot",
+    "scientificName": "Cordana musae",
+    "description": "Cordana Leaf Spot is a common fungal disease of banana leaves. While generally less destructive than Sigatoka, it can cause severe defoliation in warm, humid areas with poor management.",
+    "symptoms": [
+      "Large oval or diamond-shaped spots on leaves.",
+      "Spots have a prominent bright yellow halo surrounding them.",
+      "Concentric dark and light brown rings inside the lesion, resembling a target.",
+      "Lesions often merge, causing large sections of the leaf edge to dry out."
+    ],
+    "causes": "Caused by the fungus Cordana musae.",
+    "spreadMethod": "Spores are spread by wind, rain splashes, and contact with contaminated tools or clothing.",
+    "treatment": "Foliar application of copper-based fungicides or mancozeb when disease pressure is high.",
+    "prevention": "Prune excess leaves to decrease humidity in the canopy, remove infected crop residues, and keep fields free of weeds."
+  },
+  {
+    "id": "healthy",
+    "name": "Healthy Leaf",
+    "scientificName": "Musa acuminata / Musa balbisiana",
+    "description": "The leaf appears healthy, with a uniform green color and no active signs of fungal or bacterial infection. Continue standard agricultural maintenance.",
+    "symptoms": [
+      "No spots, streaks, or yellowing.",
+      "Firm, turgid leaf texture with intact margins.",
+      "Uniform light to dark green surface."
+    ],
+    "causes": "N/A - Standard healthy state.",
+    "spreadMethod": "N/A",
+    "treatment": "None required.",
+    "prevention": "Maintain proper fertilization, irrigation, weed control, and regular observation to keep the plantation healthy."
+  },
+  {
+    "id": "panama_disease",
+    "name": "Panama Disease (Fusarium Wilt)",
+    "scientificName": "Fusarium oxysporum f. sp. cubense",
+    "description": "Panama Disease is a notorious soil-borne fungal disease that attacks the vascular system of the banana plant, preventing water transport. It is one of the most destructive plant diseases in history.",
+    "symptoms": [
+      "Yellowing of older leaves, starting from the leaf margins.",
+      "Leaves collapse at the petiole and hang down, forming a skirt around the pseudostem.",
+      "Splitting of the base of the pseudostem.",
+      "Reddish-brown discoloration of the internal vascular strands (visible when pseudostem is cut)."
+    ],
+    "causes": "Caused by the soil-borne fungus Fusarium oxysporum f. sp. cubense (Foc), particularly Tropical Race 4 (TR4).",
+    "spreadMethod": "Movement of infested soil, running water, infected planting materials (suckers), and contaminated machinery or tools.",
+    "treatment": "No chemical cure exists once a plant is infected. Systemic fungicides are ineffective.",
+    "prevention": "Enforce strict quarantine, use certified disease-free tissue-cultured plantlets, plant resistant varieties (e.g., Cavendish clones resistant to TR4), and disinfect footwear and machinery before entering the farm."
+  },
+  {
+    "id": "moko_disease",
+    "name": "Moko Disease",
+    "scientificName": "Ralstonia solanacearum Race 2",
+    "description": "Moko is a highly infectious bacterial wilt disease that affects bananas and plantains. It causes rapid wilting and plant death, representing a massive biosecurity threat.",
+    "symptoms": [
+      "Rapid yellowing and wilting of the inner, younger leaves.",
+      "The leaf petioles break, and leaves dry up but remain attached.",
+      "Young suckers may blacken and wilt rapidly.",
+      "Fruit shows internal dry rot and black discoloration; pseudostem exudes bacterial ooze when cut."
+    ],
+    "causes": "Caused by the bacterium Ralstonia solanacearum (Race 2).",
+    "spreadMethod": "Transmission by insect vectors (bees, wasps) visiting flowers, contaminated pruning tools, root contact, and infected soil water.",
+    "treatment": "No chemical treatment is available. Infected plants must be eradicated immediately.",
+    "prevention": "Remove male buds (de-budding) using a forked stick to prevent insect transmission, sterilize tools with 10% formaldehyde or disinfectants between plants, and quarantine/fallow infected spots for at least 6-12 months."
+  },
+  {
+    "id": "pestalotiopsis",
+    "name": "Pestalotiopsis Leaf Spot",
+    "scientificName": "Pestalotiopsis microspora",
+    "description": "Pestalotiopsis Leaf Spot is an opportunistic fungal infection that typically attacks weak, damaged, or stressed banana leaves, causing localized leaf lesions.",
+    "symptoms": [
+      "Circular to oval necrotic leaf spots with a dark brown margin.",
+      "Spots have a light brown to grey center.",
+      "Tiny black pinpoints (fruiting bodies called acervuli) visible in the center of mature spots.",
+      "Lesions may enlarge and merge on leaf tips under humid conditions."
+    ],
+    "causes": "Caused by the fungus Pestalotiopsis microspora.",
+    "spreadMethod": "Spores are spread by rain splashes and wind, entering the leaf tissue through wounds or insect punctures.",
+    "treatment": "Foliar fungicide spray using Mancozeb or Carbendazim if spots cover a significant portion of active leaves.",
+    "prevention": "Maintain plant vigor through balanced nutrition, prevent physical damage to leaves, control leaf-feeding insects, and remove dead leaves from the ground."
+  },
+  {
+    "id": "yellow_sigatoka",
+    "name": "Yellow Sigatoka",
+    "scientificName": "Mycosphaerella musicola",
+    "description": "Yellow Sigatoka is a major fungal leaf spot disease of bananas. It causes significant leaf damage, reducing fruit yield and quality.",
+    "symptoms": [
+      "Pale green to yellow spots or streaks on leaves.",
+      "Spots develop grey centers with a dark brown border.",
+      "Severe infections can lead to premature leaf death and defoliation."
+    ],
+    "causes": "Caused by the fungus Mycosphaerella musicola.",
+    "spreadMethod": "Wind-borne ascospores and water-splashed conidia during high humidity and rainfall.",
+    "treatment": "Foliar fungicide application, rotated to prevent resistance.",
+    "prevention": "Ensure good drainage, weed control, and target leaf pruning to lower relative humidity."
+  }
+]
