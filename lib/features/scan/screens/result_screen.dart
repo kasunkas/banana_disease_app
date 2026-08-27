@@ -19,6 +19,7 @@ class ResultScreen extends ConsumerStatefulWidget {
   final List<double> rawPredictions;
   final List<List<double>> rawHeatmap;
   final bool isSavedRecord;
+  final String? warningMessage;
 
   const ResultScreen({
     super.key,
@@ -27,6 +28,7 @@ class ResultScreen extends ConsumerStatefulWidget {
     required this.rawPredictions,
     required this.rawHeatmap,
     required this.isSavedRecord,
+    this.warningMessage,
   });
 
   @override
@@ -157,6 +159,48 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                   child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    if (widget.warningMessage != null && widget.warningMessage!.isNotEmpty) ...[
+                      GlassCard(
+                        color: Colors.amber.withValues(alpha: 0.12),
+                        borderRadius: 12.0,
+                        borderColor: Colors.amber.withValues(alpha: 0.5),
+                        borderWidth: 1.5,
+                        padding: const EdgeInsets.all(14.0),
+                        animateOnTap: false,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(Icons.warning_amber_rounded, color: Colors.amber, size: 28),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Borderline Severity Warning',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13.5,
+                                      color: Colors.amber,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    widget.warningMessage!,
+                                    style: TextStyle(
+                                      fontSize: 12.0,
+                                      height: 1.35,
+                                      color: isDark ? Colors.white70 : Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
                     if (widget.scan.originalUnenhancedPath != null) ...[
                       GlassCard(
                         color: Colors.amber.withValues(alpha: 0.06),
@@ -636,11 +680,11 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
 
   Widget _buildSeverityChip(String severity) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    Color color = isDark ? const Color(0xFF29B6F6) : const Color(0xFF0288D1); // Default to low
+    Color color = isDark ? const Color(0xFF66BB6A) : const Color(0xFF2E7D32); // Low = Green
     if (severity.toLowerCase() == 'high') {
-      color = isDark ? const Color(0xFFEF5350) : const Color(0xFFD32F2F);
+      color = isDark ? const Color(0xFFEF5350) : const Color(0xFFD32F2F); // High = Red
     } else if (severity.toLowerCase() == 'medium') {
-      color = isDark ? const Color(0xFFFFB74D) : const Color(0xFFFF9800);
+      color = isDark ? const Color(0xFFFFB74D) : const Color(0xFFFF9800); // Medium = Amber
     }
 
     return Container(

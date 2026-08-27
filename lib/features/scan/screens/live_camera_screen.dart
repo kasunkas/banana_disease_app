@@ -299,28 +299,9 @@ class _LiveCameraScreenState extends ConsumerState<LiveCameraScreen> {
       final inferenceResult = await tfliteService.runInference(fileToAnalyze);
 
       // 5. Parse classification outputs
-      int predictedIndex = 0;
-      double maxProb = -1.0;
-      for (int i = 0; i < inferenceResult.predictions.length; i++) {
-        if (inferenceResult.predictions[i] > maxProb) {
-          maxProb = inferenceResult.predictions[i];
-          predictedIndex = i;
-        }
-      }
-
-      final int uiIndex = tfliteService.mapModelIndexToUiIndex(predictedIndex);
-      final String rawClassName = tfliteService.labels[uiIndex];
-      final double confidence = maxProb * 100.0;
-
-      // Extract severity
-      String severity = "Low";
-      if (rawClassName.toLowerCase() != 'healthy') {
-        if (confidence > 70.0) {
-          severity = "High";
-        } else if (confidence > 40.0) {
-          severity = "Medium";
-        }
-      }
+      final String rawClassName = inferenceResult.predictedDisease;
+      final double confidence = inferenceResult.diseaseConfidence;
+      final String severity = inferenceResult.predictedSeverity;
 
       if (mounted) {
         setState(() {
@@ -426,18 +407,11 @@ class _LiveCameraScreenState extends ConsumerState<LiveCameraScreen> {
       final inferenceResult = await tfliteService.runInference(fileToAnalyze, bypassIqa: true);
 
       // Parse predictions
-      int predictedIndex = 0;
-      double maxProb = -1.0;
-      for (int i = 0; i < inferenceResult.predictions.length; i++) {
-        if (inferenceResult.predictions[i] > maxProb) {
-          maxProb = inferenceResult.predictions[i];
-          predictedIndex = i;
-        }
-      }
-
-      final int uiIndex = tfliteService.mapModelIndexToUiIndex(predictedIndex);
-      final String rawClassName = tfliteService.labels[uiIndex];
-      final double confidence = maxProb * 100.0;
+      final String rawClassName = inferenceResult.predictedDisease;
+      final double confidence = inferenceResult.diseaseConfidence;
+      final String severity = inferenceResult.predictedSeverity;
+      int predictedIndex = tfliteService.labels.indexOf(rawClassName);
+      if (predictedIndex < 0) predictedIndex = 0;
 
       // Generate Grad-CAM overlays
       final gradCamResult = await gradCamService.generateGradCam(
@@ -453,19 +427,15 @@ class _LiveCameraScreenState extends ConsumerState<LiveCameraScreen> {
         overlayImagePath: gradCamResult.overlayImageFile.path,
         diseaseName: rawClassName,
         confidence: confidence,
-        severity: gradCamResult.severity,
+        severity: severity,
         inferenceTimeMs: inferenceResult.inferenceTime.inMilliseconds,
         createdAt: DateTime.now(),
         originalUnenhancedPath: enhancementResult.wasEnhanced ? file.path : null,
       );
 
       final Map<String, double> allProbabilities = {};
-      for (final label in tfliteService.labels) {
-        allProbabilities[label.replaceAll('_', ' ')] = 0.0;
-      }
       for (int i = 0; i < inferenceResult.predictions.length; i++) {
-        final int mappingUiIndex = tfliteService.mapModelIndexToUiIndex(i);
-        final label = tfliteService.labels[mappingUiIndex].replaceAll('_', ' ');
+        final label = tfliteService.labels[i].replaceAll('_', ' ');
         allProbabilities[label] = inferenceResult.predictions[i] * 100.0;
       }
 
@@ -483,6 +453,7 @@ class _LiveCameraScreenState extends ConsumerState<LiveCameraScreen> {
               rawPredictions: inferenceResult.predictions,
               rawHeatmap: gradCamResult.rawHeatmap,
               isSavedRecord: false,
+              warningMessage: inferenceResult.warningMessage,
             ),
           ),
         );

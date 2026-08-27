@@ -18,13 +18,25 @@ class IqaException implements Exception {
 }
 
 class InferenceResult {
-  final List<double> predictions; // shape [6]
-  final List<List<List<double>>> featureMaps; // shape [7, 7, 1280]
-  final List<double> denseActivations; // shape [128]
+  final List<double> predictions; // shape [7] (disease probabilities)
+  final List<double> severityPredictions; // shape [3] (low, medium, high probabilities)
+  final String predictedDisease;
+  final String predictedSeverity;
+  final double diseaseConfidence;
+  final double severityConfidence;
+  final String? warningMessage;
+  final List<List<List<double>>> featureMaps;
+  final List<double> denseActivations;
   final Duration inferenceTime;
 
   InferenceResult({
     required this.predictions,
+    required this.severityPredictions,
+    required this.predictedDisease,
+    required this.predictedSeverity,
+    required this.diseaseConfidence,
+    required this.severityConfidence,
+    this.warningMessage,
     required this.featureMaps,
     required this.denseActivations,
     required this.inferenceTime,
@@ -40,9 +52,9 @@ class TfliteService {
   Future<void> initialize() async {
     if (_interpreter != null) return;
     try {
-      debugPrint("Initializing TFLite Interpreter...");
+      debugPrint("Initializing Multitask TFLite Interpreter...");
       // Load interpreter
-      _interpreter = await tfl.Interpreter.fromAsset('assets/models/banana_disease_model.tflite');
+      _interpreter = await tfl.Interpreter.fromAsset('assets/models/banana_multitask_model.tflite');
       debugPrint("Interpreter loaded successfully.");
 
       // Load labels
@@ -62,15 +74,7 @@ class TfliteService {
   List<String> get labels => _labels;
 
   int mapModelIndexToUiIndex(int modelIndex) {
-    switch (modelIndex) {
-      case 0: return 0; // Black_Sigatoka -> Black_Sigatoka
-      case 1: return 1; // Cordana -> Cordana
-      case 2: return 2; // Healthy -> Healthy
-      case 3: return 3; // Panama_Disease -> Panama_Disease
-      case 4: return 5; // Pestalotiopsis -> Pestalotiopsis
-      case 5: return 6; // Yellow_Sigatoka -> Yellow_Sigatoka
-      default: return 2; // Default to Healthy
-    }
+    return modelIndex;
   }
 
   Future<InferenceResult> runInference(File imageFile, {bool bypassIqa = false}) async {
@@ -81,29 +85,27 @@ class TfliteService {
     // 1. Preprocess image with optional Image Quality Assessment
     final inputTensor = await _preprocessImage(imageFile, bypassIqa: bypassIqa);
 
-    // 2. Prepare output buffers
-    // Output 0: Predictions shape [1, 6]
-    var predictionsOut = List.generate(1, (i) => List.filled(6, 0.0));
-    
-    // Output 1: Feature maps shape [1, 7, 7, 1280]
-    var featureMapsOut = List.generate(
-      1,
-      (i) => List.generate(
-        7,
-        (j) => List.generate(
-          7,
-          (k) => List.filled(1280, 0.0),
-        ),
-      ),
-    );
-    
-    // Output 2: Dense activations shape [1, 128]
-    var denseActivationsOut = List.generate(1, (i) => List.filled(128, 0.0));
+    // 2. Prepare output buffers & determine tensor indices dynamically
+    final output0Shape = _interpreter!.getOutputTensor(0).shape;
+    final output1Shape = _interpreter!.getOutputTensor(1).shape;
+
+    int diseaseOutputIndex = 1;
+    int severityOutputIndex = 0;
+
+    if (output0Shape.last == 7) {
+      diseaseOutputIndex = 0;
+      severityOutputIndex = 1;
+    } else if (output1Shape.last == 7) {
+      diseaseOutputIndex = 1;
+      severityOutputIndex = 0;
+    }
+
+    var diseaseOut = List.generate(1, (i) => List.filled(7, 0.0));
+    var severityOut = List.generate(1, (i) => List.filled(3, 0.0));
 
     final outputs = {
-      0: featureMapsOut,
-      1: denseActivationsOut,
-      2: predictionsOut,
+      diseaseOutputIndex: diseaseOut,
+      severityOutputIndex: severityOut,
     };
 
     // 3. Run inference
@@ -111,11 +113,80 @@ class TfliteService {
 
     stopwatch.stop();
 
-    // Flatten first dimension [0] for easier usage
+    List<double> diseaseProbs = diseaseOut[0];
+    List<double> severityProbs = severityOut[0];
+
+    // 4. Parse Disease Prediction
+    int maxDiseaseIdx = 0;
+    double maxDiseaseProb = -1.0;
+    for (int i = 0; i < diseaseProbs.length; i++) {
+      if (diseaseProbs[i] > maxDiseaseProb) {
+        maxDiseaseProb = diseaseProbs[i];
+        maxDiseaseIdx = i;
+      }
+    }
+
+    String predictedDisease = (maxDiseaseIdx < _labels.length) ? _labels[maxDiseaseIdx] : "Healthy";
+    double diseaseConfidence = maxDiseaseProb * 100.0;
+
+    // 5. Parse Severity Prediction (0: Low, 1: Medium, 2: High)
+    const List<String> severityLabels = ["Low", "Medium", "High"];
+    int maxSeverityIdx = 0;
+    double maxSeverityProb = -1.0;
+    for (int i = 0; i < severityProbs.length; i++) {
+      if (severityProbs[i] > maxSeverityProb) {
+        maxSeverityProb = severityProbs[i];
+        maxSeverityIdx = i;
+      }
+    }
+
+    String predictedSeverity = severityLabels[maxSeverityIdx];
+    double severityConfidence = maxSeverityProb * 100.0;
+
+    if (predictedDisease.toLowerCase() == 'healthy') {
+      predictedSeverity = "Low";
+    }
+
+    // 6. Borderline Severity Warning Logic
+    String? warningMessage;
+    if (predictedDisease.toLowerCase() != 'healthy') {
+      double pLow = severityProbs[0];
+      double pMedium = severityProbs[1];
+      double pHigh = severityProbs[2];
+
+      if (predictedSeverity == "Medium") {
+        if ((pMedium - pHigh) <= 0.15) {
+          warningMessage = "Borderline Severity Warning: High severity probability is within 15% of Medium. The true severity may be higher than reported.";
+        } else if ((pMedium - pLow) <= 0.15) {
+          warningMessage = "Borderline Severity Warning: Low severity probability is close to Medium. Monitor closely.";
+        }
+      } else if (predictedSeverity == "Low") {
+        if ((pLow - pMedium) <= 0.15) {
+          warningMessage = "Borderline Severity Warning: Medium severity probability is within 15% of Low. The true severity may be higher than reported.";
+        }
+      }
+    }
+
+    // Fallback feature maps & dense activations for Grad-CAM backward compatibility
+    var featureMapsOut = List.generate(
+      7,
+      (j) => List.generate(
+        7,
+        (k) => List.filled(1280, 0.0),
+      ),
+    );
+    var denseActivationsOut = List.filled(128, 0.0);
+
     return InferenceResult(
-      predictions: predictionsOut[0],
-      featureMaps: featureMapsOut[0],
-      denseActivations: denseActivationsOut[0],
+      predictions: diseaseProbs,
+      severityPredictions: severityProbs,
+      predictedDisease: predictedDisease,
+      predictedSeverity: predictedSeverity,
+      diseaseConfidence: diseaseConfidence,
+      severityConfidence: severityConfidence,
+      warningMessage: warningMessage,
+      featureMaps: featureMapsOut,
+      denseActivations: denseActivationsOut,
       inferenceTime: stopwatch.elapsed,
     );
   }

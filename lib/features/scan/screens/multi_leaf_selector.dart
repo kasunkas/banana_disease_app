@@ -110,23 +110,16 @@ class _MultiLeafSelectorState extends ConsumerState<MultiLeafSelector> {
         final inferenceResult = await tfliteService.runInference(croppedFile, bypassIqa: true);
 
         // Get predicted class details
-        int predictedIndex = 0;
-        double maxProb = -1.0;
-        for (int k = 0; k < inferenceResult.predictions.length; k++) {
-          if (inferenceResult.predictions[k] > maxProb) {
-            maxProb = inferenceResult.predictions[k];
-            predictedIndex = k;
-          }
-        }
-        
-        final int uiIndex = tfliteService.mapModelIndexToUiIndex(predictedIndex);
-        final String rawClassName = tfliteService.labels[uiIndex];
-        final double confidence = maxProb * 100.0;
+        final String rawClassName = inferenceResult.predictedDisease;
+        final double confidence = inferenceResult.diseaseConfidence;
+        final String severity = inferenceResult.predictedSeverity;
+        int predictedIndex = tfliteService.labels.indexOf(rawClassName);
+        if (predictedIndex < 0) predictedIndex = 0;
 
         // 3. Generate Grad-CAM on crop
         final gradCamResult = await gradCamService.generateGradCam(
           originalImageFile: croppedFile,
-          predictedClassIndex: predictedIndex, // Use the raw model index (0-5) for Grad-CAM weights mapping
+          predictedClassIndex: predictedIndex,
           diseaseName: rawClassName,
           featureMaps: inferenceResult.featureMaps,
           denseActivations: inferenceResult.denseActivations,
@@ -137,20 +130,14 @@ class _MultiLeafSelectorState extends ConsumerState<MultiLeafSelector> {
           overlayImagePath: gradCamResult.overlayImageFile.path,
           diseaseName: rawClassName,
           confidence: confidence,
-          severity: gradCamResult.severity,
+          severity: severity,
           inferenceTimeMs: inferenceResult.inferenceTime.inMilliseconds,
           createdAt: DateTime.now(),
         );
 
         final Map<String, double> probs = {};
-        // Initialize all UI labels to 0.0%
-        for (final label in tfliteService.labels) {
-          probs[label.replaceAll('_', ' ')] = 0.0;
-        }
-        // Populate probabilities from model predictions
         for (int k = 0; k < inferenceResult.predictions.length; k++) {
-          final int mappingUiIndex = tfliteService.mapModelIndexToUiIndex(k);
-          final label = tfliteService.labels[mappingUiIndex].replaceAll('_', ' ');
+          final label = tfliteService.labels[k].replaceAll('_', ' ');
           probs[label] = inferenceResult.predictions[k] * 100.0;
         }
 

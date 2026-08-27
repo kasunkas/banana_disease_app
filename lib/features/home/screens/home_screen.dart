@@ -158,25 +158,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       final File fileToAnalyze = enhancementResult.enhancedFile;
       final inferenceResult = await tfliteService.runInference(fileToAnalyze, bypassIqa: bypassIqa);
 
-      // Get predicted class index and name
-      int predictedIndex = 0;
-      double maxProb = -1.0;
-      for (int i = 0; i < inferenceResult.predictions.length; i++) {
-        if (inferenceResult.predictions[i] > maxProb) {
-          maxProb = inferenceResult.predictions[i];
-          predictedIndex = i;
-        }
-      }
-      
-      final int uiIndex = tfliteService.mapModelIndexToUiIndex(predictedIndex);
-      final String rawClassName = tfliteService.labels[uiIndex];
-      final double confidence = maxProb * 100.0;
+      final String rawClassName = inferenceResult.predictedDisease;
+      final double confidence = inferenceResult.diseaseConfidence;
+      final String severity = inferenceResult.predictedSeverity;
+      int predictedIndex = tfliteService.labels.indexOf(rawClassName);
+      if (predictedIndex < 0) predictedIndex = 0;
 
       // 2. Generate on-device Grad-CAM heatmap overlay
       final gradCamService = ref.read(gradCamServiceProvider);
       final gradCamResult = await gradCamService.generateGradCam(
         originalImageFile: file,
-        predictedClassIndex: predictedIndex, // Use the raw model index (0-5) for Grad-CAM weights mapping
+        predictedClassIndex: predictedIndex,
         diseaseName: rawClassName,
         featureMaps: inferenceResult.featureMaps,
         denseActivations: inferenceResult.denseActivations,
@@ -190,7 +182,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         overlayImagePath: gradCamResult.overlayImageFile.path,
         diseaseName: rawClassName,
         confidence: confidence,
-        severity: gradCamResult.severity,
+        severity: severity,
         inferenceTimeMs: inferenceResult.inferenceTime.inMilliseconds,
         createdAt: DateTime.now(),
         originalUnenhancedPath: enhancementResult.wasEnhanced ? file.path : null,
@@ -198,12 +190,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
       // Create a map of all probabilities for the UI (must include all 7 classes)
       final Map<String, double> allProbabilities = {};
-      for (final label in tfliteService.labels) {
-        allProbabilities[label.replaceAll('_', ' ')] = 0.0;
-      }
       for (int i = 0; i < inferenceResult.predictions.length; i++) {
-        final int mappingUiIndex = tfliteService.mapModelIndexToUiIndex(i);
-        final label = tfliteService.labels[mappingUiIndex].replaceAll('_', ' ');
+        final label = tfliteService.labels[i].replaceAll('_', ' ');
         allProbabilities[label] = inferenceResult.predictions[i] * 100.0;
       }
 
@@ -217,6 +205,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             rawPredictions: inferenceResult.predictions,
             rawHeatmap: gradCamResult.rawHeatmap,
             isSavedRecord: false,
+            warningMessage: inferenceResult.warningMessage,
           ),
         ),
       );
